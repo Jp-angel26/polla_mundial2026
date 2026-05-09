@@ -684,12 +684,25 @@ y+=3;
 var RHe=3.8;
 
 function faseElim(titulo,partidos){
-  if(y>H-20)NP();
+  // Calcular altura total de esta fase para decidir si salta página
+  var altFase=5+3+(partidos.length*RHe)+2;
+  if(y+altFase>H-8)NP();
   doc.setFillColor(CE[0],CE[1],CE[2]);doc.rect(EX,y,EW,5,'F');
   doc.setTextColor(255,255,255);doc.setFontSize(8);doc.setFont('helvetica','bold');
   doc.text(titulo,W/2,y+3.5,{align:'center'});y+=5;
-  // Columnas: #(8) Fecha(14) Jor(10) Local(38) GL(8) :(6) GV(8) Visitante(38) Llave(resto)
-  var C={n:EX+2,fe:EX+10,jr:EX+24,lo:EX+34,gl:EX+EW*0.58,sep:EX+EW*0.635,gv:EX+EW*0.69,vi:EX+EW*0.735,lv:EX+EW-16};
+  // Columnas bien distribuidas dentro de EW:
+  // #(6) Fecha(14) Jor(8) | Local(30) GL(10) :(6) GV(10) | Visitante(30) Llave(resto)
+  var C={
+    n:  EX+2,
+    fe: EX+9,
+    jr: EX+23,
+    lo: EX+32,
+    gl: EX+EW*0.50,
+    sep:EX+EW*0.565,
+    gv: EX+EW*0.63,
+    vi: EX+EW*0.685,
+    lv: EX+EW-18
+  };
   doc.setFillColor(CC[0],CC[1],CC[2]);doc.rect(EX,y,EW,3,'F');
   doc.setTextColor(200,210,220);doc.setFontSize(5);doc.setFont('helvetica','bold');
   doc.text('#',C.n,y+2.1);
@@ -731,11 +744,12 @@ function faseElim(titulo,partidos){
 }
 
 function clasifElim(titulo,ids){
-  if(y>H-15)NP();
+  var mid=Math.ceil(ids.length/2);
+  var altClasif=4+(mid*3.2)+2;
+  if(y+altClasif>H-8)NP();
   doc.setFillColor(CC[0],CC[1],CC[2]);doc.rect(EX,y,EW,4,'F');
   doc.setTextColor(200,210,220);doc.setFontSize(6.5);doc.setFont('helvetica','bold');
   doc.text(titulo,W/2,y+2.8,{align:'center'});y+=4;
-  var mid=Math.ceil(ids.length/2);
   var col1=ids.slice(0,mid),col2=ids.slice(mid);
   var colW=col2.length>0?(EW-3)/2:EW;
   for(var ii=0;ii<Math.max(col1.length,col2.length);ii++){
