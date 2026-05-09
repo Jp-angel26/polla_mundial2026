@@ -683,6 +683,22 @@ y+=3;
 // ── Helpers eliminatoria ──────────────────────────────────────────────────────
 var RHe=3.8;
 
+// Determina el equipo ganador de un partido eliminatorio considerando empates con penales
+function ganadorPDF(id){
+  var p=(pr.elim&&pr.elim[id])||{};
+  var lo=S(p.lo||''),vi=S(p.vi||'');
+  if(!lo&&!vi)return '';
+  var gl=parseInt(p.gL),gv=parseInt(p.gV);
+  if(isNaN(gl)||isNaN(gv))return '';
+  if(gl>gv)return lo;
+  if(gv>gl)return vi;
+  // empate — leer pen como string 'lo' o 'vi'
+  var pen=S(p.pen||'');
+  if(pen==='lo')return lo;
+  if(pen==='vi')return vi;
+  return '';
+}
+
 function faseElim(titulo,partidos){
   // Calcular altura total de esta fase para decidir si salta página
   var altFase=5+3+(partidos.length*RHe)+2;
@@ -756,8 +772,7 @@ function clasifElim(titulo,ids){
     var bg=ii%2===0?CEL:CEL2;
     if(col1[ii]!==undefined){
       var pid1=col1[ii];
-      var g1=(pr.elim&&pr.elim[pid1])||{};
-      var w1=S(g1.lo||'');
+      var w1=ganadorPDF(pid1);
       doc.setFillColor(bg[0],bg[1],bg[2]);doc.rect(EX,y,colW,3.2,'F');
       doc.setTextColor(CE[0],CE[1],CE[2]);doc.setFontSize(5.5);doc.setFont('helvetica','bold');
       doc.text('P'+S(pid1),EX+2,y+2.2);
@@ -766,8 +781,7 @@ function clasifElim(titulo,ids){
     }
     if(col2[ii]!==undefined){
       var pid2=col2[ii];
-      var g2=(pr.elim&&pr.elim[pid2])||{};
-      var w2=S(g2.lo||'');
+      var w2=ganadorPDF(pid2);
       doc.setFillColor(bg[0],bg[1],bg[2]);doc.rect(EX+colW+3,y,colW,3.2,'F');
       doc.setTextColor(CE[0],CE[1],CE[2]);doc.setFontSize(5.5);doc.setFont('helvetica','bold');
       doc.text('P'+S(pid2),EX+colW+5,y+2.2);
@@ -779,47 +793,33 @@ function clasifElim(titulo,ids){
   y+=2;
 }
 
-y+=4;
+y+=10;
 faseElim('DIECISEISAVOS DE FINAL',OCT);
 clasifElim('Clasificados a Octavos de Final',[73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88]);
-y+=4;
+y+=10;
 faseElim('OCTAVOS DE FINAL',CUA);
 clasifElim('Clasificados a Cuartos de Final',[89,90,91,92,93,94,95,96]);
-
-// ── PÁGINA 3: CUARTOS → FINAL ─────────────────────────────────────────────────
-NP();
+y+=10;
 faseElim('CUARTOS DE FINAL',SEM);
 clasifElim('Clasificados a Semifinales',[97,98,99,100]);
-y+=4;
+y+=10;
 faseElim('SEMIFINALES',SFNL);
 clasifElim('Clasificados a la Gran Final',[101,102]);
-y+=4;
+y+=10;
 faseElim('TERCER LUGAR',TER);
-y+=4;
+y+=10;
 faseElim('GRAN FINAL',FNL);
 
 // ── Cuadro de honor ───────────────────────────────────────────────────────────
 // Campeón = ganador P104, Tercer Puesto = ganador P103, Goleador = manual
-function ganadorPDF(id){
-  var p=(pr.elim&&pr.elim[id])||{};
-  var lo=S(p.lo||''),vi=S(p.vi||'');
-  if(!lo&&!vi)return 'Sin indicar';
-  var gl=parseInt(p.gL),gv=parseInt(p.gV);
-  if(isNaN(gl)||isNaN(gv))return 'Sin indicar';
-  if(gl>gv)return lo;
-  if(gv>gl)return vi;
-  var pen=parseInt(p.pen);
-  if(!isNaN(pen))return pen===1?lo:vi;
-  return 'Sin indicar';
-}
 if(y>H-28)NP();
 doc.setFillColor(26,26,46);doc.rect(EX,y,EW,5,'F');
 doc.setTextColor(212,160,23);doc.setFontSize(8);doc.setFont('helvetica','bold');
 doc.text('CUADRO DE HONOR',W/2,y+3.5,{align:'center'});y+=5;
 var ep=(pr.esp)||{};
 var honW2=EW/3;
-[['CAMPEON',ganadorPDF(104),[220,235,255]],
- ['TERCER PUESTO',ganadorPDF(103),[210,230,255]],
+[['CAMPEON',ganadorPDF(104)||'Sin indicar',[220,235,255]],
+ ['TERCER PUESTO',ganadorPDF(103)||'Sin indicar',[210,230,255]],
  ['GOLEADOR',S(ep.g||'Sin indicar'),[200,225,255]]
 ].forEach(function(h,i){
   var hx=EX+(i*honW2);
