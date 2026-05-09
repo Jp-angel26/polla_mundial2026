@@ -581,14 +581,14 @@ GS.forEach(function(g){
   // ── Cabecera partidos ──
   doc.setFillColor(CPH[0],CPH[1],CPH[2]);doc.rect(PX,y,PW,3,'F');
   doc.setTextColor(255,255,255);doc.setFontSize(5);doc.setFont('helvetica','bold');
-  // col # vacío — solo ponemos las otras columnas
-  doc.text('Jor.',PX+3,y+2.1);
-  doc.text('Local',PX+14,y+2.1);
-  doc.text('GL',PX+PW*0.63,y+2.1,{align:'center'});
-  doc.text(':',PX+PW*0.70,y+2.1,{align:'center'});
-  doc.text('GV',PX+PW*0.77,y+2.1,{align:'center'});
-  doc.text('Visitante',PX+PW*0.82,y+2.1);
-  doc.text('Fecha',PX+PW-11,y+2.1);
+  // Layout: Jor(2-9) | Local(right-aligned hasta GL) | GL(0.50) : GV(0.62) | Visitante(left desde 0.66) | Fecha(final)
+  doc.text('Jor.',PX+2,y+2.1);
+  doc.text('Local',PX+PW*0.50,y+2.1,{align:'right'});
+  doc.text('GL',PX+PW*0.535,y+2.1,{align:'center'});
+  doc.text(':',PX+PW*0.575,y+2.1,{align:'center'});
+  doc.text('GV',PX+PW*0.615,y+2.1,{align:'center'});
+  doc.text('Visitante',PX+PW*0.65,y+2.1);
+  doc.text('Fecha',PX+PW-1,y+2.1,{align:'right'});
 
   // ── Cabecera tabla ──
   doc.setFillColor(CTH[0],CTH[1],CTH[2]);doc.rect(TX,y,TW,3,'F');
@@ -609,20 +609,24 @@ GS.forEach(function(g){
     var gl=S(d.gL||d.golL||''),gv=S(d.gV||d.golV||'');
     var bg=idx%2===0?[248,249,250]:[255,255,255];
     doc.setFillColor(bg[0],bg[1],bg[2]);doc.rect(PX,yP,PW,RHg,'F');
-    // Col # — VACÍO (solo fondo)
+    // Jor
     doc.setTextColor(100,100,110);doc.setFontSize(5);doc.setFont('helvetica','normal');
-    doc.text(S(p.j),PX+3,yP+2.4);  // Jor
+    doc.text(S(p.j),PX+2,yP+2.4);
+    // Local — alineado a la DERECHA (cerca de GL)
     doc.setTextColor(44,62,80);doc.setFontSize(5);doc.setFont('helvetica','bold');
-    doc.text(S(p.lo).substring(0,14),PX+14,yP+2.4);
+    doc.text(S(p.lo).substring(0,18),PX+PW*0.50,yP+2.4,{align:'right'});
+    // Marcador
     if(gl&&gv){doc.setTextColor(26,26,46);}else{doc.setTextColor(180,180,180);}
     doc.setFontSize(6);
-    doc.text(gl||'-',PX+PW*0.63,yP+2.6,{align:'center'});
-    doc.text(':',PX+PW*0.70,yP+2.6,{align:'center'});
-    doc.text(gv||'-',PX+PW*0.77,yP+2.6,{align:'center'});
+    doc.text(gl||'-',PX+PW*0.535,yP+2.6,{align:'center'});
+    doc.text(':',PX+PW*0.575,yP+2.6,{align:'center'});
+    doc.text(gv||'-',PX+PW*0.615,yP+2.6,{align:'center'});
+    // Visitante — alineado a la IZQUIERDA (cerca de GV)
     doc.setTextColor(44,62,80);doc.setFontSize(5);doc.setFont('helvetica','bold');
-    doc.text(S(p.vi).substring(0,12),PX+PW*0.82,yP+2.4);
+    doc.text(S(p.vi).substring(0,18),PX+PW*0.65,yP+2.4);
+    // Fecha — alineada a la derecha al final
     doc.setTextColor(150,150,150);doc.setFontSize(4.5);doc.setFont('helvetica','normal');
-    doc.text(S(p.fe),PX+PW-11,yP+2.4);
+    doc.text(S(p.fe),PX+PW-1,yP+2.4,{align:'right'});
     yP+=RHg;
   });
 
@@ -706,30 +710,30 @@ function faseElim(titulo,partidos){
   doc.setFillColor(CE[0],CE[1],CE[2]);doc.rect(EX,y,EW,5,'F');
   doc.setTextColor(255,255,255);doc.setFontSize(8);doc.setFont('helvetica','bold');
   doc.text(titulo,W/2,y+3.5,{align:'center'});y+=5;
-  // Columnas bien distribuidas dentro de EW:
-  // #(6) Fecha(14) Jor(8) | Local(30) GL(10) :(6) GV(10) | Visitante(30) Llave(resto)
+  // Columnas mejor distribuidas: # más ancho, Fecha y Jor más anchos
+  // Local con right-align cerca de GL, Visitante con left-align cerca de GV
   var C={
-    n:  EX+2,
-    fe: EX+9,
-    jr: EX+23,
-    lo: EX+32,
-    gl: EX+EW*0.50,
-    sep:EX+EW*0.565,
-    gv: EX+EW*0.63,
-    vi: EX+EW*0.685,
-    lv: EX+EW-18
+    n:  EX+4,
+    fe: EX+11,
+    jr: EX+27,
+    loEnd: EX+EW*0.50,    // Local termina aquí (right-aligned)
+    gl: EX+EW*0.535,
+    sep:EX+EW*0.575,
+    gv: EX+EW*0.615,
+    viStart: EX+EW*0.65,  // Visitante empieza aquí (left-aligned)
+    lv: EX+EW-2
   };
   doc.setFillColor(CC[0],CC[1],CC[2]);doc.rect(EX,y,EW,3,'F');
   doc.setTextColor(200,210,220);doc.setFontSize(5);doc.setFont('helvetica','bold');
-  doc.text('#',C.n,y+2.1);
+  doc.text('#',C.n,y+2.1,{align:'center'});
   doc.text('Fecha',C.fe,y+2.1);
   doc.text('Jor.',C.jr,y+2.1);
-  doc.text('Local',C.lo,y+2.1);
+  doc.text('Local',C.loEnd,y+2.1,{align:'right'});
   doc.text('GL',C.gl,y+2.1,{align:'center'});
   doc.text(':',C.sep,y+2.1,{align:'center'});
   doc.text('GV',C.gv,y+2.1,{align:'center'});
-  doc.text('Visitante',C.vi,y+2.1);
-  doc.text('Llave',C.lv,y+2.1);
+  doc.text('Visitante',C.viStart,y+2.1);
+  doc.text('Llave',C.lv,y+2.1,{align:'right'});
   y+=3;
   var sorted=partidos.slice().sort(function(a,b){return a.id-b.id;});
   sorted.forEach(function(m,idx){
@@ -737,23 +741,36 @@ function faseElim(titulo,partidos){
     var p=(pr.elim&&pr.elim[m.id])||{};
     var bg=idx%2===0?CEL:CEL2;
     doc.setFillColor(bg[0],bg[1],bg[2]);doc.rect(EX,y,EW,RHe,'F');
+    // # del partido
     doc.setTextColor(CE[0],CE[1],CE[2]);doc.setFontSize(5.5);doc.setFont('helvetica','bold');
-    doc.text(S(m.id),C.n,y+2.6);
+    doc.text(S(m.id),C.n,y+2.6,{align:'center'});
+    // Fecha y Jor
     doc.setTextColor(100,110,120);doc.setFontSize(5);doc.setFont('helvetica','normal');
     doc.text(S(m.fe||''),C.fe,y+2.6);
     doc.text(S(m.j||''),C.jr,y+2.6);
+    // Local — alineado a la DERECHA, cerca del GL
     doc.setTextColor(30,50,80);doc.setFontSize(5.5);doc.setFont('helvetica','bold');
-    doc.text(S(p.lo||'').substring(0,16),C.lo,y+2.6);
+    doc.text(S(p.lo||'').substring(0,22),C.loEnd,y+2.6,{align:'right'});
+    // Marcador
     var gl2=S(p.gL||''),gv2=S(p.gV||'');
     if(gl2&&gv2){doc.setTextColor(26,46,80);}else{doc.setTextColor(180,190,200);}
     doc.setFontSize(6.5);doc.setFont('helvetica','bold');
     doc.text(gl2||'-',C.gl,y+2.8,{align:'center'});
     doc.text(':',C.sep,y+2.8,{align:'center'});
     doc.text(gv2||'-',C.gv,y+2.8,{align:'center'});
+    // Visitante — alineado a la IZQUIERDA, cerca del GV
     doc.setTextColor(30,50,80);doc.setFontSize(5.5);doc.setFont('helvetica','bold');
-    doc.text(S(p.vi||'').substring(0,16),C.vi,y+2.6);
+    doc.text(S(p.vi||'').substring(0,22),C.viStart,y+2.6);
+    // Llave — construir según el tipo de fase
+    var llave='';
+    if(m.lr&&m.vr){
+      llave=m.lr+'-'+m.vr;  // OCT, TER ya tienen lr/vr
+    } else if(m.lp&&m.vp){
+      // CUA, SEM, SFNL, FNL: construir desde lp/vp
+      llave='W'+m.lp+'-W'+m.vp;
+    }
     doc.setTextColor(CE[0],CE[1],CE[2]);doc.setFontSize(5);
-    doc.text(S(m.lr||'')+'-'+S(m.vr||''),C.lv,y+2.6);
+    doc.text(llave,C.lv,y+2.6,{align:'right'});
     y+=RHe;
   });
   y+=2;
