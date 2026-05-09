@@ -475,7 +475,6 @@ function rBK(){
 
 function showTab(n){document.querySelectorAll('.tab').forEach(function(t,i){t.classList.toggle('act',i===n);});for(var i=0;i<8;i++){var tc=document.getElementById('tabC'+i);if(tc)tc.classList.toggle('show',i===n);}if(n===6){rBK();}}
 function spK(i){i.classList.toggle('ok',i.value.trim()!=='');uP();}
-function gEW(pid){var a=document.getElementById('egl_'+pid),b=document.getElementById('egv_'+pid);}
 function uP(){var f=0,t=0;document.querySelectorAll('.sc,.msc').forEach(function(i){t++;if(i.value!=='')f++;});document.querySelectorAll('.spi').forEach(function(i){t++;if(i.value.trim()!=='')f++;});var pc=t>0?Math.round(f/t*100):0;var ci=2*Math.PI*15.9;var c=document.getElementById('pC');c.style.strokeDasharray=ci+' '+ci;c.style.strokeDashoffset=ci-(pc/100)*ci;document.getElementById('pP').textContent=pc+'%';autoHonor();}
 function autoHonor(){
   function ganW(pid){
@@ -689,17 +688,19 @@ function faseElim(titulo,partidos){
   doc.setFillColor(CE[0],CE[1],CE[2]);doc.rect(EX,y,EW,5,'F');
   doc.setTextColor(255,255,255);doc.setFontSize(8);doc.setFont('helvetica','bold');
   doc.text(titulo,W/2,y+3.5,{align:'center'});y+=5;
+  // Columnas: #(8) Fecha(14) Jor(10) Local(38) GL(8) :(6) GV(8) Visitante(38) Llave(resto)
+  var C={n:EX+2,fe:EX+10,jr:EX+24,lo:EX+34,gl:EX+EW*0.58,sep:EX+EW*0.635,gv:EX+EW*0.69,vi:EX+EW*0.735,lv:EX+EW-16};
   doc.setFillColor(CC[0],CC[1],CC[2]);doc.rect(EX,y,EW,3,'F');
   doc.setTextColor(200,210,220);doc.setFontSize(5);doc.setFont('helvetica','bold');
-  doc.text('#',EX+2,y+2.1);
-  doc.text('Fecha',EX+9,y+2.1);
-  doc.text('Jor.',EX+23,y+2.1);
-  doc.text('Local',EX+34,y+2.1);
-  doc.text('GL',EX+EW*0.62,y+2.1,{align:'center'});
-  doc.text(':',EX+EW*0.68,y+2.1,{align:'center'});
-  doc.text('GV',EX+EW*0.74,y+2.1,{align:'center'});
-  doc.text('Visitante',EX+EW*0.78,y+2.1);
-  doc.text('Llave',EX+EW-14,y+2.1);
+  doc.text('#',C.n,y+2.1);
+  doc.text('Fecha',C.fe,y+2.1);
+  doc.text('Jor.',C.jr,y+2.1);
+  doc.text('Local',C.lo,y+2.1);
+  doc.text('GL',C.gl,y+2.1,{align:'center'});
+  doc.text(':',C.sep,y+2.1,{align:'center'});
+  doc.text('GV',C.gv,y+2.1,{align:'center'});
+  doc.text('Visitante',C.vi,y+2.1);
+  doc.text('Llave',C.lv,y+2.1);
   y+=3;
   var sorted=partidos.slice().sort(function(a,b){return a.id-b.id;});
   sorted.forEach(function(m,idx){
@@ -708,22 +709,22 @@ function faseElim(titulo,partidos){
     var bg=idx%2===0?CEL:CEL2;
     doc.setFillColor(bg[0],bg[1],bg[2]);doc.rect(EX,y,EW,RHe,'F');
     doc.setTextColor(CE[0],CE[1],CE[2]);doc.setFontSize(5.5);doc.setFont('helvetica','bold');
-    doc.text(S(m.id),EX+2,y+2.6);
+    doc.text(S(m.id),C.n,y+2.6);
     doc.setTextColor(100,110,120);doc.setFontSize(5);doc.setFont('helvetica','normal');
-    doc.text(S(m.fe||''),EX+9,y+2.6);
-    doc.text(S(m.j||''),EX+23,y+2.6);
+    doc.text(S(m.fe||''),C.fe,y+2.6);
+    doc.text(S(m.j||''),C.jr,y+2.6);
     doc.setTextColor(30,50,80);doc.setFontSize(5.5);doc.setFont('helvetica','bold');
-    doc.text(S(p.lo||'').substring(0,20),EX+34,y+2.6);
+    doc.text(S(p.lo||'').substring(0,16),C.lo,y+2.6);
     var gl2=S(p.gL||''),gv2=S(p.gV||'');
     if(gl2&&gv2){doc.setTextColor(26,46,80);}else{doc.setTextColor(180,190,200);}
     doc.setFontSize(6.5);doc.setFont('helvetica','bold');
-    doc.text(gl2||'-',EX+EW*0.62,y+2.8,{align:'center'});
-    doc.text(':',EX+EW*0.68,y+2.8,{align:'center'});
-    doc.text(gv2||'-',EX+EW*0.74,y+2.8,{align:'center'});
+    doc.text(gl2||'-',C.gl,y+2.8,{align:'center'});
+    doc.text(':',C.sep,y+2.8,{align:'center'});
+    doc.text(gv2||'-',C.gv,y+2.8,{align:'center'});
     doc.setTextColor(30,50,80);doc.setFontSize(5.5);doc.setFont('helvetica','bold');
-    doc.text(S(p.vi||'').substring(0,20),EX+EW*0.78,y+2.6);
+    doc.text(S(p.vi||'').substring(0,16),C.vi,y+2.6);
     doc.setTextColor(CE[0],CE[1],CE[2]);doc.setFontSize(5);
-    doc.text(S(m.lr||'')+'-'+S(m.vr||''),EX+EW-14,y+2.6);
+    doc.text(S(m.lr||'')+'-'+S(m.vr||''),C.lv,y+2.6);
     y+=RHe;
   });
   y+=2;
@@ -764,10 +765,10 @@ function clasifElim(titulo,ids){
   y+=2;
 }
 
-y+=10;
+y+=4;
 faseElim('DIECISEISAVOS DE FINAL',OCT);
 clasifElim('Clasificados a Octavos de Final',[73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88]);
-y+=10;
+y+=4;
 faseElim('OCTAVOS DE FINAL',CUA);
 clasifElim('Clasificados a Cuartos de Final',[89,90,91,92,93,94,95,96]);
 
@@ -775,12 +776,12 @@ clasifElim('Clasificados a Cuartos de Final',[89,90,91,92,93,94,95,96]);
 NP();
 faseElim('CUARTOS DE FINAL',SEM);
 clasifElim('Clasificados a Semifinales',[97,98,99,100]);
-y+=10;
+y+=4;
 faseElim('SEMIFINALES',SFNL);
 clasifElim('Clasificados a la Gran Final',[101,102]);
-y+=10;
+y+=4;
 faseElim('TERCER LUGAR',TER);
-y+=10;
+y+=4;
 faseElim('GRAN FINAL',FNL);
 
 // ── Cuadro de honor ───────────────────────────────────────────────────────────
