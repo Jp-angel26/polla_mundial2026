@@ -356,7 +356,7 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',Arial,sans-seri
 
 
 <script>
-var SURL='https://script.google.com/macros/s/AKfycbx0HaEhvIKuoPH_v1ioKDC1Ah6fOFLGalJKAujRamSThbwZGpA739TVb30Z75aCgfXL/exec';
+var SURL='https://script.google.com/macros/s/AKfycbwp76OUjqUr0PZgGJKP_9JS4doqmVKGS9i8R5AJ7pqFJ1LjDYZXe0_xtU61neNs6a8R/exec';
 // Flag helper: convert country name to flag <img> tag using flagcdn
 var _FC={"México":"mx","Sudáfrica":"za","Corea del Sur":"kr","República Checa":"cz","Canadá":"ca","Bosnia":"ba","Catar":"qa","Suiza":"ch","Brasil":"br","Marruecos":"ma","Haití":"ht","Escocia":"gb-sct","Estados Unidos":"us","Paraguay":"py","Australia":"au","Turquía":"tr","Alemania":"de","Curazao":"cw","Costa de Marfil":"ci","Ecuador":"ec","Países Bajos":"nl","Japón":"jp","Suecia":"se","Túnez":"tn","Bélgica":"be","Egipto":"eg","Irán":"ir","Nueva Zelanda":"nz","España":"es","Cabo Verde":"cv","Arabia Saudita":"sa","Uruguay":"uy","Francia":"fr","Senegal":"sn","Irak":"iq","Noruega":"no","Argentina":"ar","Argelia":"dz","Austria":"at","Jordania":"jo","Portugal":"pt","Gales":"gb-wls","Serbia":"rs","Colombia":"co","Inglaterra":"gb-eng","Camerún":"cm","Panamá":"pa","China":"cn","Uzbekistán":"uz","RD Congo":"cd","Croacia":"hr","Ghana":"gh"};
 function fI(name){var c=_FC[name];if(!c)return'';return'<img src="https://flagcdn.com/w40/'+c+'.png" alt="" style="width:22px;height:15px;vertical-align:middle;border-radius:2px;">';}
@@ -1183,7 +1183,7 @@ function guardarGrupos(){
     return;
   }
   var pr=rec();dG={n:nom,p:pr};
-  var payload=JSON.stringify({nombre:nom,tipo:'grupos',predicciones:pr.grupos});
+  var payload=JSON.stringify({nombre:nom,tipo:'grupos',predicciones:pr.grupos,standings:pr.standings,ties:pr.ties,t3Ov:pr.t3Ov});
   shT('Guardando grupos...');
   fetch(SURL,{method:'POST',mode:'no-cors',body:payload})
     .then(function(){gruposGuardados=true;shT('✅ Grupos guardados correctamente');irA(0);})
