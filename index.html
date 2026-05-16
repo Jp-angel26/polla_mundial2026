@@ -363,15 +363,15 @@ function fI(name){var c=_FC[name];if(!c)return'';return'<img src="https://flagcd
 
 // ── Lista de participantes ──
 var PARTICIPANTES=[
-  {n:1,nombre:'Alex (Geomecanica)'},
-  {n:2,nombre:'Alexander (Laboratorio)'},
-  {n:3,nombre:'Antonio Cruz (Geologia)'},
-  {n:4,nombre:'Arlex (Planeamiento)'},
-  {n:5,nombre:'Canchila (Proyectos)'},
-  {n:6,nombre:'Carlos (G.humana)'},
-  {n:7,nombre:'Carlos (Laboratorio)'},
-  {n:8,nombre:'Daniel (Seguridad)'},
-  {n:9,nombre:'David Vivar (Mina)'},
+  {n:1,nombre:'Alejandra (Metalicas)'},
+  {n:2,nombre:'Alex (Geomecanica)'},
+  {n:3,nombre:'Alexander (Laboratorio)'},
+  {n:4,nombre:'Antonio Cruz (Geologia)'},
+  {n:5,nombre:'Arlex (Planeamiento)'},
+  {n:6,nombre:'Canchila (Proyectos)'},
+  {n:7,nombre:'Carlos (G.humana)'},
+  {n:8,nombre:'Carlos (Laboratorio)'},
+  {n:9,nombre:'Daniel (Seguridad)'},
   {n:10,nombre:'Deison (Geologia)'},
   {n:11,nombre:'Derian (Mina)'},
   {n:12,nombre:'Diego (Geologia)'},
@@ -382,30 +382,29 @@ var PARTICIPANTES=[
   {n:17,nombre:'Glenis (Servicios)'},
   {n:18,nombre:'Haminton (Geologia)'},
   {n:19,nombre:'Jainny (Rdc)'},
-  {n:20,nombre:'Jairo (Contratos)'},
-  {n:21,nombre:'Jhonny (Planeamiento)'},
-  {n:22,nombre:'Jose (Geologia)'},
-  {n:23,nombre:'Jose (Planeamiento)'},
-  {n:24,nombre:'Juan Celis (Rdc)'},
-  {n:25,nombre:'Juan P. (planeamiento)'},
-  {n:26,nombre:'Julian (Man.Electrico)'},
-  {n:27,nombre:'Julio Serna (Mina)'},
-  {n:28,nombre:'Laura (Planeamiento)'},
-  {n:29,nombre:'Leonardo (Planeamiento)'},
-  {n:30,nombre:'Lorena (Geomecanica)'},
-  {n:31,nombre:'Manuel (Geologia)'},
-  {n:32,nombre:'Mario (Geologia)'},
-  {n:33,nombre:'Nelson (Man.Electrico)'},
-  {n:34,nombre:'Okoro (Mina)'},
-  {n:35,nombre:'Rafael (Geologia)'},
-  {n:36,nombre:'Santiago (Mina)'},
-  {n:37,nombre:'Sebastian (Geologia)'},
-  {n:38,nombre:'Sebastian (Logueo)'},
-  {n:39,nombre:'Sebastian (Planeamiento)'},
-  {n:40,nombre:'Stiven (Servicios)'},
-  {n:41,nombre:'Trujillo (Mina)'},
-  {n:42,nombre:'Vicente (Man.electrico)'},
-  {n:43,nombre:'William (Planeamiento)'}
+  {n:20,nombre:'Jhonny (Planeamiento)'},
+  {n:21,nombre:'Jose (Geologia)'},
+  {n:22,nombre:'Jose (Planeamiento)'},
+  {n:23,nombre:'Juan Celis (Rdc)'},
+  {n:24,nombre:'Juan P. (planeamiento)'},
+  {n:25,nombre:'Julian (Man.Electrico)'},
+  {n:26,nombre:'Julio Serna (Mina)'},
+  {n:27,nombre:'Laura (Planeamiento)'},
+  {n:28,nombre:'Leonardo (Planeamiento)'},
+  {n:29,nombre:'Lorena (Geomecanica)'},
+  {n:30,nombre:'Manuel (Geologia)'},
+  {n:31,nombre:'Mario (Geologia)'},
+  {n:32,nombre:'Nelson (Man.Electrico)'},
+  {n:33,nombre:'Okoro (Mina)'},
+  {n:34,nombre:'Rafael (Geologia)'},
+  {n:35,nombre:'Santiago (Mina)'},
+  {n:36,nombre:'Sebastian (Geologia)'},
+  {n:37,nombre:'Sebastian (Logueo)'},
+  {n:38,nombre:'Sebastian (Planeamiento)'},
+  {n:39,nombre:'Stiven (Servicios)'},
+  {n:40,nombre:'Trujillo (Mina)'},
+  {n:41,nombre:'Vicente (Man.electrico)'},
+  {n:42,nombre:'William (Planeamiento)'}
 ];
 
 // ── Autocompletado por número ──
@@ -414,9 +413,17 @@ function acNum(){
   var tip=document.getElementById('ac-tip');
   if(!v){if(tip)tip.style.display='none';return;}
   var num=parseInt(v);
+  // Números libres 43-50: el participante escribe su nombre manualmente
+  if(num>=43&&num<=50){
+    document.getElementById('pN').value='';
+    document.getElementById('pN').placeholder='Escribe tu nombre';
+    if(tip){tip.textContent='Número libre — escribe tu nombre';tip.style.display='block';}
+    return;
+  }
   var found=PARTICIPANTES.find(function(p){return p.n===num;});
   if(found){
     document.getElementById('pN').value=found.nombre;
+    document.getElementById('pN').placeholder='Tu nombre completo';
     if(tip){tip.textContent='';tip.style.display='none';}
   } else {
     if(tip){tip.textContent='Número no encontrado';tip.style.display='block';}
@@ -427,6 +434,9 @@ function acNum(){
 function acNombre(){
   var v=document.getElementById('pN').value.trim().toLowerCase();
   var tip=document.getElementById('ac-tip');
+  // Si el número ya es libre (43-50), no sugerir nada
+  var num=parseInt(document.getElementById('pNum').value.trim());
+  if(num>=43&&num<=50){if(tip)tip.style.display='none';return;}
   if(v.length<2){if(tip)tip.style.display='none';return;}
   var matches=PARTICIPANTES.filter(function(p){return p.nombre.toLowerCase().indexOf(v)>=0;});
   if(matches.length===1){
