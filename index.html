@@ -534,7 +534,8 @@ function cT(g){
   for(var i=0;i<t.length-1;i++){var a=t[i],b=t[i+1];
     if(a.j>0&&b.j>0&&a.p===b.p&&a.h===b.h&&a.dg===b.dg&&a.gf===b.gf){a.td=1;b.td=1;a.tw=b.n;b.tw=a.n;}}
   var sel=document.getElementById('tie_g_'+g.id);
-  if(sel&&sel.value){var ch=sel.value;for(var i=0;i<t.length-1;i++){if(t[i].td&&t[i+1].td&&t[i+1].n===ch){var tmp=t[i];t[i]=t[i+1];t[i+1]=tmp;break;}}}
+  var tieVal=sel?sel.value:(savedScores['tie_g_'+g.id]||'');
+  if(tieVal){var ch=tieVal;for(var i=0;i<t.length-1;i++){if(t[i].td&&t[i+1].td&&t[i+1].n===ch){var tmp=t[i];t[i]=t[i+1];t[i+1]=tmp;break;}}}
   return t;}
 function gGT(gId,pos){var g=GS.find(function(x){return x.id===gId;});if(!g)return null;var t=cT(g);return pos<=t.length&&t[pos-1].j>0?{n:t[pos-1].n,f:t[pos-1].f}:null;}
 function gBT(){var r=[];GS.forEach(function(g){var t=cT(g);if(t.length>=3&&t[2].j>0)r.push({g:g.id,n:t[2].n,f:t[2].f,p:t[2].p,dg:t[2].dg,gf:t[2].gf});});
@@ -584,7 +585,7 @@ function rT(gI){var g=GS.find(function(x){return x.id===gI;});var tb=document.ge
       '</div><select id="tie_g_'+gI+'" style="display:none"><option value="'+cv2+'"></option>'+
       tied.map(function(e){return'<option value="'+e.n+'">'+e.n+'</option>';}).join('')+'</select></div>';}
   else tw.innerHTML='';}
-function setTie(gI,nm){var s=document.getElementById('tie_g_'+gI);if(s)s.value=nm;rT(gI);uEN();rMT3();rEmp();rBK();}
+function setTie(gI,nm){var s=document.getElementById('tie_g_'+gI);if(s)s.value=nm;savedScores['tie_g_'+gI]=nm;rT(gI);uEN();rMT3();rEmp();rBK();}
 function oS(inp,nId,gI,mI){savedScores[inp.id]=inp.value;inp.classList.toggle('ok',inp.value!=='');if(inp.value.length>=2&&nId)document.getElementById(nId).focus();
   var a=document.getElementById('gl_'+mI),b=document.getElementById('gv_'+mI),tr=document.getElementById('tr_'+mI);
   if(tr)tr.classList.toggle('dn',a&&b&&a.value!==''&&b.value!=='');rT(gI);uEN();rMT3();rEmp();rBK();uP();}
@@ -758,7 +759,18 @@ function autoHonor(){
   if(sp3&&c103){sp3.value=c103;sp3.classList.toggle('ok',true);}
 }
 var dG=null;
-function rec(){var pr={grupos:{},elim:{},esp:{}};GS.forEach(function(g){pr.grupos[g.id]=g.pa.map(function(m){var elL=document.getElementById('gl_'+m.id);var elV=document.getElementById('gv_'+m.id);var gL=elL?elL.value:(savedScores['gl_'+m.id]||''),gV=elV?elV.value:(savedScores['gv_'+m.id]||'');return{id:m.id,fe:m.fe,j:m.j,fL:m.fL,lo:m.lo,gL:gL,gV:gV,fV:m.fV,vi:m.vi,fecha:m.fe,jor:m.j,flagL:m.fL,local:m.lo,golL:gL,golV:gV,flagV:m.fV,visit:m.vi};});});OCT.concat(CUA).concat(SEM).concat(SFNL).concat(TER).concat(FNL).forEach(function(m){var lt=rMT(m,'lo'),vt=rMT(m,'vi');var penEl=document.getElementById('pen_'+m.id);var penVal=penEl?penEl.value:'';pr.elim[m.id]={id:m.id,fe:m.fe,j:m.j||'',lr:m.lr||'',vr:m.vr||'',lo:lt?lt.n:'',vi:vt?vt.n:'',fL:lt?lt.f:'',fV:vt?vt.f:'',gL:(document.getElementById('egl_'+m.id)||{}).value||'',gV:(document.getElementById('egv_'+m.id)||{}).value||'',pen:penVal};});pr.esp={c:(document.getElementById('sp1')||{}).value||'',t:(document.getElementById('sp3')||{}).value||'',g:(document.getElementById('sp4')||{}).value||''};return pr;}
+function rec(){var pr={grupos:{},ties:{},t3Ov:'',elim:{},esp:{}};GS.forEach(function(g){pr.grupos[g.id]=g.pa.map(function(m){var elL=document.getElementById('gl_'+m.id);var elV=document.getElementById('gv_'+m.id);var gL=elL?elL.value:(savedScores['gl_'+m.id]||''),gV=elV?elV.value:(savedScores['gv_'+m.id]||'');return{id:m.id,fe:m.fe,j:m.j,fL:m.fL,lo:m.lo,gL:gL,gV:gV,fV:m.fV,vi:m.vi,fecha:m.fe,jor:m.j,flagL:m.fL,local:m.lo,golL:gL,golV:gV,flagV:m.fV,visit:m.vi};});
+  // Incluir desempate manual de este grupo
+  var tieEl=document.getElementById('tie_g_'+g.id);
+  var tieVal=tieEl?tieEl.value:(savedScores['tie_g_'+g.id]||'');
+  if(tieVal) pr.ties[g.id]=tieVal;
+  // Incluir standings ya calculado con tiebreakers FIFA aplicados
+  var st=cT(g);pr.standings=pr.standings||{};
+  pr.standings[g.id]=st.map(function(e,i){return{n:e.n,p:e.p,j:e.j,w:e.w,d:e.d,l:e.l,gf:e.gf,gc:e.gc,dg:e.dg,pos:i+1};});
+});
+// Incluir desempate de mejor tercero
+pr.t3Ov=t3Ov&&t3Ov.g?t3Ov.g:'';
+OCT.concat(CUA).concat(SEM).concat(SFNL).concat(TER).concat(FNL).forEach(function(m){var lt=rMT(m,'lo'),vt=rMT(m,'vi');var penEl=document.getElementById('pen_'+m.id);var penVal=penEl?penEl.value:'';pr.elim[m.id]={id:m.id,fe:m.fe,j:m.j||'',lr:m.lr||'',vr:m.vr||'',lo:lt?lt.n:'',vi:vt?vt.n:'',fL:lt?lt.f:'',fV:vt?vt.f:'',gL:(document.getElementById('egl_'+m.id)||{}).value||'',gV:(document.getElementById('egv_'+m.id)||{}).value||'',pen:penVal};});pr.esp={c:(document.getElementById('sp1')||{}).value||'',t:(document.getElementById('sp3')||{}).value||'',g:(document.getElementById('sp4')||{}).value||''};return pr;}
 function enviar(){var nm=document.getElementById('pN').value.trim();if(!nm){shT('Escribe tu nombre');return;}
 var bt=document.getElementById('bS');bt.disabled=1;bt.textContent='ENVIANDO...';
 var pr=rec();dG={n:nm,p:pr};
@@ -1324,6 +1336,12 @@ function saveCurrentGroup(){
   document.querySelectorAll('.sc').forEach(function(inp){
     if(inp.value!=='') savedScores[inp.id]=inp.value;
   });
+  // Guardar también el desempate manual del grupo actual
+  var gId=GS[curGrupo]?GS[curGrupo].id:'';
+  if(gId){
+    var tieEl=document.getElementById('tie_g_'+gId);
+    if(tieEl&&tieEl.value) savedScores['tie_g_'+gId]=tieEl.value;
+  }
 }
 function oS(inp,nId,gI,mI){
   savedScores[inp.id]=inp.value;
