@@ -1214,7 +1214,7 @@ function guardar(){
   saveCurrentGroup();
   var pr=rec();dG={n:nom,p:pr};
   // Enviar los 3 tipos secuencialmente
-  var payload=JSON.stringify({nombre:nom,tipo:'grupos',predicciones:pr.grupos});
+  var payload=JSON.stringify({nombre:nom,tipo:'grupos',predicciones:pr.grupos,standings:pr.standings,ties:pr.ties,t3Ov:pr.t3Ov});
   shT('Guardando...');
   fetch(SURL,{method:'POST',mode:'no-cors',body:payload});
   setTimeout(function(){
