@@ -251,7 +251,7 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',Arial,sans-seri
     <div class="portada-label">Ingresa tus datos para comenzar</div>
     <div class="input-row">
       <input class="inp-num" id="pNum" type="number" min="1" max="99" placeholder="Nro." inputmode="numeric" oninput="acNum()">
-      <input class="inp-name" id="pN" type="text" placeholder="Tu nombre completo" autocomplete="off" oninput="acNombre()">
+      <input class="inp-name" id="pN" type="text" placeholder="Tu nombre o iniciales" autocomplete="off" oninput="acNombreKey(event)" data-search="">
     </div>
     <div id="ac-tip" style="display:none;background:#1a3a1a;border:1px solid #c9960c;border-radius:8px;padding:6px 10px;margin-top:4px;font-size:13px;color:#fff;max-height:180px;overflow-y:auto;"></div>
     <div class="action-btns">
@@ -382,7 +382,7 @@ var PARTICIPANTES=[
   {n:17,nombre:'Glenis (Servicios)'},
   {n:18,nombre:'Haminton (Geologia)'},
   {n:19,nombre:'Jainny (Rdc)'},
-  {n:20,nombre:'Jhonny (Planeamiento)'},
+  {n:20,nombre:'Jose (Mina)'},
   {n:21,nombre:'Jose (Geologia)'},
   {n:22,nombre:'Jose (Planeamiento)'},
   {n:23,nombre:'Juan Celis (Rdc)'},
@@ -404,44 +404,67 @@ var PARTICIPANTES=[
   {n:39,nombre:'Stiven (Servicios)'},
   {n:40,nombre:'Trujillo (Mina)'},
   {n:41,nombre:'Vicente (Man.electrico)'},
-  {n:42,nombre:'William (Planeamiento)'}
+  {n:42,nombre:'William (Planeamiento)'},
+  {n:43,nombre:'Oscar (Mina)'},
+  {n:44,nombre:'Edward (Rdc)'},
+  {n:45,nombre:'Juan Q. (Seguridad)'},
+  {n:46,nombre:'Ciro (Planta)'}
 ];
 
 // ── Autocompletado por número ──
 function acNum(){
   var v=document.getElementById('pNum').value.trim();
   var tip=document.getElementById('ac-tip');
-  if(!v){if(tip)tip.style.display='none';return;}
+  var pN=document.getElementById('pN');
+  if(!v){
+    if(tip)tip.style.display='none';
+    pN.readOnly=false;
+    pN.style.background='#fff';
+    pN.value='';
+    pN.dataset.search='';
+    pN.placeholder='Tu nombre o iniciales';
+    return;
+  }
   var num=parseInt(v);
-  // Números libres 43-50: el participante escribe su nombre manualmente
-  if(num>=43&&num<=50){
-    document.getElementById('pN').value='';
-    document.getElementById('pN').placeholder='Escribe tu nombre';
+  // Números libres sin registrar: el participante escribe su nombre manualmente
+  if(num>=47&&num<=50){
+    pN.value='';
+    pN.readOnly=false;
+    pN.style.background='#fff';
+    pN.placeholder='Escribe tu nombre';
     if(tip){tip.textContent='Número libre — escribe tu nombre';tip.style.display='block';}
     return;
   }
   var found=PARTICIPANTES.find(function(p){return p.n===num;});
   if(found){
-    document.getElementById('pN').value=found.nombre;
-    document.getElementById('pN').placeholder='Tu nombre completo';
+    pN.value=found.nombre;
+    pN.readOnly=true;
+    pN.style.background='#f0f0f0';
+    pN.dataset.search='';
     if(tip){tip.textContent='';tip.style.display='none';}
   } else {
+    pN.readOnly=false;
+    pN.style.background='#fff';
     if(tip){tip.textContent='Número no encontrado';tip.style.display='block';}
   }
 }
 
-// ── Autocompletado por nombre ──
+// ── Autocompletado por nombre (busca mientras escribe, bloquea al seleccionar) ──
 function acNombre(){
-  var v=document.getElementById('pN').value.trim().toLowerCase();
+  var pN=document.getElementById('pN');
+  var v=pN.dataset.search||'';
   var tip=document.getElementById('ac-tip');
-  // Si el número ya es libre (43-50), no sugerir nada
+  // Si el número ya es libre (47-50), no sugerir nada
   var num=parseInt(document.getElementById('pNum').value.trim());
-  if(num>=43&&num<=50){if(tip)tip.style.display='none';return;}
+  if(num>=47&&num<=50){if(tip)tip.style.display='none';return;}
   if(v.length<2){if(tip)tip.style.display='none';return;}
-  var matches=PARTICIPANTES.filter(function(p){return p.nombre.toLowerCase().indexOf(v)>=0;});
+  var matches=PARTICIPANTES.filter(function(p){return p.nombre.toLowerCase().indexOf(v.toLowerCase())>=0;});
   if(matches.length===1){
-    document.getElementById('pN').value=matches[0].nombre;
+    pN.value=matches[0].nombre;
+    pN.dataset.search='';
     document.getElementById('pNum').value=matches[0].n;
+    pN.readOnly=true;
+    pN.style.background='#f0f0f0';
     if(tip){tip.textContent='';tip.style.display='none';}
   } else if(matches.length>1){
     if(tip){
@@ -455,11 +478,25 @@ function acNombre(){
   }
 }
 
+// Campo nombre: captura teclas en un buffer de búsqueda mientras está desbloqueado
+function acNombreKey(e){
+  var pN=document.getElementById('pN');
+  if(pN.readOnly)return;
+  // Acumular búsqueda
+  setTimeout(function(){
+    pN.dataset.search=pN.value.trim();
+    acNombre();
+  },50);
+}
+
 function acSelect(num){
   var found=PARTICIPANTES.find(function(p){return p.n===num;});
   if(!found)return;
   document.getElementById('pNum').value=found.n;
-  document.getElementById('pN').value=found.nombre;
+  var pN=document.getElementById('pN');
+  pN.value=found.nombre;
+  pN.readOnly=true;
+  pN.style.background='#f0f0f0';
   var tip=document.getElementById('ac-tip');
   if(tip){tip.innerHTML='';tip.style.display='none';}
 }
